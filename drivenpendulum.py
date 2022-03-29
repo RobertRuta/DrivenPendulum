@@ -44,6 +44,9 @@ def SetSim():
     print()
 
     tf = input("Enter simulation duration: ")
+
+def CleanUp(sol):
+
     
 def MakeFrames(G):
     for g in G:

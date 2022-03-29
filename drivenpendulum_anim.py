@@ -111,7 +111,8 @@ def MakeFrames():
     ax = fig.add_subplot(111)
 
     for i in range(0, t.size, di):
-        ax.plot([0, X[i]], [0, Y[i]], lw=2, c='k')
+        print("Step: {}".format(i))
+        ax.plot([0, X[i]], [0, Y[i]], lw=2, c='k')        
 
         # Draw Circles
         c_pivot = Circle((0,0), R/2, fc='k', zorder=10)
@@ -129,7 +130,11 @@ def MakeFrames():
                 continue
             imax = imin + s + 1
             alpha = (j/ns)**2
-            ax.plot(X[imin:imax], Y[imin:imax], c='r', solid_capstyle='butt', lw=2, alpha=alpha)
+            ax.plot(X[imin:imax], Y[imin:imax], c='b', solid_capstyle='butt', lw=3, alpha=alpha)
+
+        # Plot Forcing Arrow
+        arrowLen = 0.2*cos(w*t[i])
+        ax.plot([X[i], X[i] + arrowLen*sin(-th[i])], [Y[i], Y[i] + arrowLen*cos(th[i])], '-r')
             
         # Centre the image on the fixed anchor point, and ensure the axes are equal
         ax.set_xlim(-1-R, R+1)
@@ -137,7 +142,7 @@ def MakeFrames():
         ax.set_aspect('equal', adjustable='box')
 
         # Text-box printing total time elapsed
-        textstr = '\u03c6 = {:.2f} \n t = {:.2f}'.format(th[i], t[i])
+        textstr = '\u03b8 = {:.2f} rads \n t = {:.2f} s'.format(th[i], t[i])
         props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
         ax.text(-0.3, 1.1, textstr, transform=ax.transAxes, fontsize=14, verticalalignment='top', bbox=props)
 
@@ -146,13 +151,13 @@ def MakeFrames():
         plt.cla()
 
 w = 2/3
-q = 2
+q = 4
 #G = np.linspace(0.7, 2, 200)
 #G = [0.9, 1.07, 1.15, 1.35, 1.45, 1.50]
-g = 1.15
+g = 1.5
 
 theta_0 = 0
-thetadot_0 = 0.2
+thetadot_0 = 0
 
 t0 = 0
 tf = 30
