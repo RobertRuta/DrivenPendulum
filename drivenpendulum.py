@@ -44,10 +44,20 @@ def SetSim():
     print()
 
     tf = input("Enter simulation duration: ")
-
-def CleanUp(sol):
-
     
+    def CleanUp(sol):
+<<<<<<< HEAD
+
+=======
+        i = 0        
+        for angle in sol.y[0]:    
+            sgn = angle / np.abs(angle)
+            result = angle - sgn*int((np.abs(np.degrees(angle)) + 180)/360)*2*np.pi
+            sol.y[0,i] = result            
+            i += 1
+        
+        return sol
+>>>>>>> 1679afedcb72eb7db944621d5d8e3118d3d29792
 def MakeFrames(G):
     for g in G:
         print("g = {}".format(g))    
