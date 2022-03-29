@@ -46,9 +46,6 @@ def SetSim():
     tf = input("Enter simulation duration: ")
     
     def CleanUp(sol):
-<<<<<<< HEAD
-
-=======
         i = 0        
         for angle in sol.y[0]:    
             sgn = angle / np.abs(angle)
@@ -57,54 +54,124 @@ def SetSim():
             i += 1
         
         return sol
->>>>>>> 1679afedcb72eb7db944621d5d8e3118d3d29792
-def MakeFrames(G):
+
+
+def CleanUp(solution):
+    i = 0        
+    for angle in solution.y[0]:    
+        sgn = angle / np.abs(angle)
+        result = angle - sgn*int((np.abs(np.degrees(angle)) + 180)/360)*2*np.pi
+        solution.y[0,i] = result            
+        i += 1
+
+def MakePhaseDiagram(axes, X, Y, g):
+    axes.scatter(X, Y, s=1, c='black')
+    axes.set_xlim([-pi,pi])
+    axes.axhline(color='black')
+    axes.axvline(color='black')
+    axes.set_xlabel("\u03b8 [rad]")
+    axes.set_ylabel("\u03c9 [rad/s]")
+    axes.set_title("Phase Diagram | g = {:.3f}".format(g), fontsize=20)  
+
+    return axes  
+
+def MakePoincareDiagram(axes, X, Y, g):
+    axes.scatter(X, Y, s=1, c='black', marker='s')
+    axes.set_xlim([-pi,pi])
+    axes.axhline(color='black')
+    axes.axvline(color='black')
+    axes.set_xlabel("\u03b8 [rad]")
+    axes.set_ylabel("\u03c9 [rad/s]")
+    axes.set_title("Poincare Map | g = {:.3f}".format(g), fontsize=20)
+
+    return axes  
+    
+def CreateDiagrams(G):
     for g in G:
         print("g = {}".format(g))    
         
         params = np.array([w, q, g])
-        sol1 = simulate(y0, params, t0, tf, N)
-        sol2 = simulate(y0, params, 30*2*pi/w, 5030*2*pi/w, 5001)
+        sol1 = solve_ivp(deriv, (0, tf), y0, t_eval=np.linspace(t0, tf, N), args=(w, g, q, ))
+        sol2 = solve_ivp(deriv, (0, 5030*2*pi/w), y0, t_eval=np.linspace(30*2*pi/w, 5030*2*pi/w, 5001), args=(w, g, q, ))
         
         fig = plt.figure(figsize=(7,7))
         ax1 = fig.add_subplot(211)
         ax2 = fig.add_subplot(212)
 
-        i = 0        
-        for angle in sol1[0]:    
-            sgn = angle / np.abs(angle)
-            result = angle - sgn*int((np.abs(np.degrees(angle)) + 180)/360)*2*np.pi
-            sol1[0,i] = result            
-            i += 1
-            
-        i = 0
-        for angle in sol2[0]:    
-            sgn = angle / np.abs(angle)
-            result = angle - sgn*int((np.abs(np.degrees(angle)) + 180)/360)*2*np.pi
-            sol2[0,i] = result            
-            i += 1
+        sol1 = CleanUp(sol1)
+        sol2 = CleanUp(sol2)
 
-        ax1.scatter(sol1[0], sol1[1], s=1, c='black')
-        ax1.set_xlim([-pi,pi])
-        ax1.axhline(color='black')
-        ax1.axvline(color='black')
-        ax1.set_xlabel("\u03b8 [rad]")
-        ax1.set_ylabel("\u03c9 [rad/s]")
-        ax1.set_title("Phase Diagram | g = {:.3f}".format(g), fontsize=20)
-        
-        ax2.scatter(sol2[0], sol2[1], s=1, c='black', marker='s')
-        ax2.set_xlim([-pi,pi])
-        ax2.axhline(color='black')
-        ax2.axvline(color='black')
-        ax2.set_xlabel("\u03b8 [rad]")
-        ax2.set_ylabel("\u03c9 [rad/s]")
-        ax2.set_title("Poincare Map | g = {:.3f}".format(g), fontsize=20)
+        ax1 = MakePhaseDiagram(ax1, sol1.y[0], sol1.y[1]. g)
+        ax2 = MakePoincareDiagram(ax2, sol2.y[0], sol2.y[1]. g)
         
         fig.subplots_adjust(hspace=0.4)
         fig.savefig("PhaseAndPoincare_frames/specific/phase_poincare_diag{}.png".format(int(g*100)))
         plt.close(fig)
         
+# Create frames to be used in gif
+def MakeFrames():
+
+    sol = solve_ivp(deriv, (0, tf), y0, t_eval=np.linspace(t0, tf, N), args=(w, g, q, ))
     
+    th = sol.y[0]
+    X = cos(th)
+    Y = sin(th)
+    t = sol.t
+
+    dt = t[1] - t[0]
+    R = 0.05
+    trail_duration = 1
+    trail_length = int(trail_duration / dt)
+
+    # Make an image every di time points, corresponding to a frame rate of fps
+    # frames per second.
+    # Frame rate, s-1
+    fps = 30
+    di = round(1/fps/dt)
+
+    fig = plt.figure(figsize=(8.3333, 6.25), dpi=72)
+    ax = fig.add_subplot(111)
+
+    for i in range(0, t.size, di):
+        print("Step: {}".format(i))
+        ax.plot([0, X[i]], [0, Y[i]], lw=2, c='k')        
+
+        # Draw Circles
+        c_pivot = Circle((0,0), R/2, fc='k', zorder=10)
+        c_ball = Circle((X[i],Y[i]), R, fc='b', zorder=10)
+        ax.add_patch(c_pivot)
+        ax.add_patch(c_ball)
+
+        # Draw Trail
+        ns = 20
+        s = trail_length // ns
+        
+        for j in range(ns):
+            imin = i - (ns-j)*s
+            if imin < 0:
+                continue
+            imax = imin + s + 1
+            alpha = (j/ns)**2
+            ax.plot(X[imin:imax], Y[imin:imax], c='b', solid_capstyle='butt', lw=3, alpha=alpha)
+
+        # Plot Forcing Arrow
+        arrowLen = 0.2*cos(w*t[i])
+        ax.plot([X[i], X[i] + arrowLen*sin(-th[i])], [Y[i], Y[i] + arrowLen*cos(th[i])], '-r')
+            
+        # Centre the image on the fixed anchor point, and ensure the axes are equal
+        ax.set_xlim(-1-R, R+1)
+        ax.set_ylim(-1-R, 1+R)
+        ax.set_aspect('equal', adjustable='box')
+
+        # Text-box printing total time elapsed
+        textstr = '\u03b8 = {:.2f} rads \n t = {:.2f} s'.format(th[i], t[i])
+        props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+        ax.text(-0.3, 1.1, textstr, transform=ax.transAxes, fontsize=14, verticalalignment='top', bbox=props)
+
+        plt.axis('off')
+        plt.savefig('anim_frames/_img_{frame:04d}.png'.format(frame = i//di), dpi=72)
+        plt.cla()
+
 w = 2/3
 q = 2
 #G = np.linspace(0.7, 2, 200)
@@ -122,4 +189,5 @@ N = 10000
 
 y0 = np.array([theta_0, thetadot_0])
 
-MakeFrames(G)
+#CreateDiagrams(G)
+#MakePlots
