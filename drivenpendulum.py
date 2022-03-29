@@ -44,6 +44,16 @@ def SetSim():
     print()
 
     tf = input("Enter simulation duration: ")
+
+def CleanUp(sol):
+        i = 0        
+        for angle in sol.y[0]:    
+            sgn = angle / np.abs(angle)
+            result = angle - sgn*int((np.abs(np.degrees(angle)) + 180)/360)*2*np.pi
+            sol.y[0,i] = result            
+            i += 1
+        
+        return sol
     
 def MakeFrames(G):
     for g in G:
@@ -51,25 +61,10 @@ def MakeFrames(G):
         
         params = np.array([w, q, g])
         sol1 = simulate(y0, params, t0, tf, N)
-        sol2 = simulate(y0, params, 30*2*pi/w, 5030*2*pi/w, 5001)
         
         fig = plt.figure(figsize=(7,7))
         ax1 = fig.add_subplot(211)
         ax2 = fig.add_subplot(212)
-
-        i = 0        
-        for angle in sol1[0]:    
-            sgn = angle / np.abs(angle)
-            result = angle - sgn*int((np.abs(np.degrees(angle)) + 180)/360)*2*np.pi
-            sol1[0,i] = result            
-            i += 1
-            
-        i = 0
-        for angle in sol2[0]:    
-            sgn = angle / np.abs(angle)
-            result = angle - sgn*int((np.abs(np.degrees(angle)) + 180)/360)*2*np.pi
-            sol2[0,i] = result            
-            i += 1
 
         ax1.scatter(sol1[0], sol1[1], s=1, c='black')
         ax1.set_xlim([-pi,pi])
@@ -91,22 +86,34 @@ def MakeFrames(G):
         fig.savefig("PhaseAndPoincare_frames/specific/phase_poincare_diag{}.png".format(int(g*100)))
         plt.close(fig)
         
+def MakePhase(xlim, ylim, N):
+    sol = solve_ivp(deriv, (0, tf), y0, t_eval=np.linspace(t0, tf, N), args=(w, g, q, ))
+    sol = CleanUp(sol)
     
+    theta = sol.y[0]
+    omega = sol.y[1]
+    
+    fig_phase = plt.figure(figsize=(7,7))
+    ax_phase = fig_phase.add_subplot(111)
+    
+    ax_phase.scatter(theta, omega, ',k')
+    plt.show()
+    
+
 w = 2/3
 q = 2
 #G = np.linspace(0.7, 2, 200)
-G = [0.9, 1.07, 1.15, 1.35, 1.45, 1.50]
+#G = [0.9, 1.07, 1.15, 1.35, 1.45, 1.50]
+g = 1.5
 
 
 theta_0 = 0
 thetadot_0 = 0.2
+y0 = np.array([theta_0, thxlimetadot_0])
 
 t0 = 4000
 tf = 5000
 
 N = 10000
-#SetSim()
 
-y0 = np.array([theta_0, thetadot_0])
-
-MakeFrames(G)
+MakePhase([-pi,pi], [-2*pi, 2*pi], N)
