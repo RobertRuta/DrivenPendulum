@@ -55,7 +55,6 @@ def SetSim():
         
         return sol
 
-
 def CleanUp(solution):
     i = 0        
     for angle in solution.y[0]:    
@@ -76,7 +75,7 @@ def MakePhaseDiagram(axes, X, Y, g):
     return axes  
 
 def MakePoincareDiagram(axes, X, Y, g):
-    axes.scatter(X, Y, s=1, c='black', marker='s')
+    axes.scatter(X, Y, s=1, c='black', marker=',')
     axes.set_xlim([-pi,pi])
     axes.axhline(color='black')
     axes.axvline(color='black')
@@ -88,9 +87,8 @@ def MakePoincareDiagram(axes, X, Y, g):
     
 def CreateDiagrams(G):
     for g in G:
-        print("g = {}".format(g))    
+        print("g = {}".format(g))
         
-        params = np.array([w, q, g])
         sol1 = solve_ivp(deriv, (0, tf), y0, t_eval=np.linspace(t0, tf, N), args=(w, g, q, ))
         sol2 = solve_ivp(deriv, (0, 5030*2*pi/w), y0, t_eval=np.linspace(30*2*pi/w, 5030*2*pi/w, 5001), args=(w, g, q, ))
         
@@ -175,19 +173,28 @@ def MakeFrames():
 w = 2/3
 q = 2
 #G = np.linspace(0.7, 2, 200)
-G = [0.9, 1.07, 1.15, 1.35, 1.45, 1.50]
-
+#G = [0.9, 1.07, 1.15, 1.35, 1.45, 1.50]
+g = 1.5
 
 theta_0 = 0
-thetadot_0 = 0.2
+thetadot_0 = 0
+y0 = np.array([theta_0, thetadot_0])
 
 t0 = 4000
 tf = 5000
 
 N = 10000
+
+sol = solve_ivp(deriv, (0, 50030*2*pi/w), y0, t_eval=np.linspace(30*2*pi/w, 50030*2*pi/w, 50001), args=(w, g, q, ))
+CleanUp(sol)
+
+fig = plt.figure(figsize=(7,7))
+ax = fig.add_subplot(111)
+
+ax = MakePoincareDiagram(ax, sol.y[0], sol.y[1], g)
+
+plt.show()  
+
 #SetSim()
-
-y0 = np.array([theta_0, thetadot_0])
-
 #CreateDiagrams(G)
 #MakePlots
