@@ -1,5 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import pickle
+import time
 
 from scipy.integrate import solve_ivp
 from numpy import sin, cos, pi
@@ -14,14 +16,6 @@ def deriv(t, y, w, g, q):
     
     return np.array([thetadot, thetaddot])
 
-def simulate(y0, params, t0, tf, N):
-    w = params[0]
-    q = params[1]
-    g = params[2]
-        
-    sol = solve_ivp(deriv, (0, tf), y0, t_eval=np.linspace(t0, tf, N), args=(w, g, q, ))
-    
-    return np.array([sol.y[0], sol.y[1], sol.t])
 
 def SetSim():
     global w
@@ -75,13 +69,15 @@ def MakePhaseDiagram(axes, X, Y, g):
     return axes  
 
 def MakePoincareDiagram(axes, X, Y, g):
-    axes.scatter(X, Y, s=1, c='black', marker=',')
+    #axes.axhline(color='black', lw=0.3)
+    #axes.axvline(color='black', lw=0.3)
+
+    axes.scatter(X, Y, s=0.05, linewidth=0, c='black', marker='.')
     axes.set_xlim([-pi,pi])
-    axes.axhline(color='black')
-    axes.axvline(color='black')
+    axes.set_ylim([-1,pi])
     axes.set_xlabel("\u03b8 [rad]")
     axes.set_ylabel("\u03c9 [rad/s]")
-    axes.set_title("Poincare Map | g = {:.3f}".format(g), fontsize=20)
+    axes.set_title("Poincare Map | g = {:.3f}, q = 4".format(g), fontsize=16)
 
     return axes  
     
@@ -169,6 +165,43 @@ def MakeFrames():
         plt.axis('off')
         plt.savefig('anim_frames/_img_{frame:04d}.png'.format(frame = i//di), dpi=72)
         plt.cla()
+    i = 0
+
+def SaveData(N):
+
+    data_to_save = []
+    data_to_save = np.empty((len(N), 4))
+
+    i=0
+    for n in N:
+        print("Trying to save {}x2 data points".format(n))
+
+        start_time = time.time()
+        sol = solve_ivp(deriv, (0, (n+30)*2*pi/w), y0, t_eval=np.linspace(30*2*pi/w, (n+30)*2*pi/w, n+1), args=(w, g, q, ))
+        solve_time = time.time() - start_time
+        print("Total solve time: {}".format(solve_time))
+
+        start_time = time.time()
+        CleanUp(sol)
+        clean_time = time.time() - start_time
+        print("Total clean time: {}".format(clean_time))
+
+        start_time = time.time()
+        with open("phasedata_q{}_g{}_{}e3.pickle".format(int(q*10), int(g*10), int(n/1000)), 'wb') as file:
+            pickle.dump(sol, file)
+        pickle_time = time.time() - start_time
+        print("Total pickle time: {}".format(pickle_time))
+
+        data_to_save[i,:] = [n, solve_time, clean_time, pickle_time]
+        i += 1
+
+    np.savetxt("timings.csv", data_to_save, delimiter=', ')
+
+def LoadData(N):
+    with open("Pickles/phasedata_q20_g15_{}e3.pickle".format(int(N/1000)), 'rb') as file:
+        sol = pickle.load(file)
+    return sol
+
 
 w = 2/3
 q = 2
@@ -183,17 +216,28 @@ y0 = np.array([theta_0, thetadot_0])
 t0 = 4000
 tf = 5000
 
-N = 10000
+N = np.geomspace(10**7, 10**8, 3)
+N = N.astype(int)
 
-sol = solve_ivp(deriv, (0, 50030*2*pi/w), y0, t_eval=np.linspace(30*2*pi/w, 50030*2*pi/w, 50001), args=(w, g, q, ))
-CleanUp(sol)
 
-fig = plt.figure(figsize=(7,7))
-ax = fig.add_subplot(111)
+SaveData([10**8])
 
-ax = MakePoincareDiagram(ax, sol.y[0], sol.y[1], g)
+# sol = LoadData(N[2])
+# th = sol.y[0]
+# omega = sol.y[1]
 
-plt.show()  
+# fig = plt.figure(figsize=(7,7), dpi=128)
+# ax = fig.add_subplot(111)
+# MakePoincareDiagram(ax,th,omega,1.5)
+# #ax.scatter(th, omega, marker='.', linewidth=0, s=0.1, c='k')
+# plt.show()
+
+# fig = plt.figure(figsize=(8,8))
+# ax = fig.add_subplot(111)
+
+# ax = MakePoincareDiagram(ax, sol.y[0], sol.y[1], g)
+# #fig.savefig("phase_poincare_diag{}.png".format(int(g*100)))
+# plt.show()  
 
 #SetSim()
 #CreateDiagrams(G)

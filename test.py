@@ -1,14 +1,29 @@
 import numpy as np
 from numpy import pi, cos
+import time
+import pickle
 
-N = 1000
+start_time = time.time()
 
-phi = pi/10
+N = 1000000
 
-t0 = phi + 2*pi*10
-tf = phi + 2*pi*N
 
-A = np.arange(t0, tf, 2*pi)
 
-print(cos(A[10]))
-print(cos(A[20]))
+data = np.random.uniform(0, 1, size=(N,2))
+
+with open('test_data.pickle', 'wb') as file:
+    pickle.dump(data, file)
+
+with open('test_data.pickle', 'rb') as file:
+    data_loaded = pickle.load(file)
+
+print(data_loaded)
+print(data)
+
+#np.savetxt('test_data1.csv', data, delimiter=', ')
+#file = open('test_data', 'w')
+#file.write()
+
+## Conclusion:: Pickle fast af
+
+print("--- %s seconds ---" % (time.time() - start_time))
