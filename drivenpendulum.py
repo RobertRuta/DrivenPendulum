@@ -49,8 +49,6 @@ def AddProgressBar():
     # overwrite the old methods with our customized ones
     OdeSolver.__init__ = new_init
     OdeSolver.step = new_step
-
-def ModifedSolveIVP():
     
 def SetSim():
     global w
