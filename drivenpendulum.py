@@ -174,7 +174,7 @@ def SaveData(N):
 
     i=0
     for n in N:
-        print("Trying to save {} data points".format(n))
+        print("Trying to save {}x2 data points".format(n))
 
         start_time = time.time()
         sol = solve_ivp(deriv, (0, (n+30)*2*pi/w), y0, t_eval=np.linspace(30*2*pi/w, (n+30)*2*pi/w, n+1), args=(w, g, q, ))
@@ -202,7 +202,6 @@ def LoadData(N):
         sol = pickle.load(file)
     return sol
 
-AddProgressBar()
 
 w = 2/3
 q = 2
@@ -220,7 +219,8 @@ tf = 5000
 N = np.geomspace(10**7, 10**8, 3)
 N = N.astype(int)
 
-SaveData([10*10**4])
+
+SaveData([10**8])
 
 # sol = LoadData(N[2])
 # th = sol.y[0]
