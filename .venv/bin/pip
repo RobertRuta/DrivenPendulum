@@ -1,4 +1,4 @@
-#!/home/robert/Documents/code/python/DrivenPendulum/.venv/bin/python3
+#!/home/robert/Documents/code/python/PhysSimulations/DrivenPendulum2/.venv/bin/python3.10
 # -*- coding: utf-8 -*-
 import re
 import sys

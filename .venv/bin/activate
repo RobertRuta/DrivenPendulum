@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/robert/Documents/code/python/DrivenPendulum/.venv"
+VIRTUAL_ENV="/home/robert/Documents/code/python/PhysSimulations/DrivenPendulum2/.venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

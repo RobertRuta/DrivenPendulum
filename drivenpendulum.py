@@ -3,8 +3,9 @@ import matplotlib.pyplot as plt
 import pickle
 import time
 
-from scipy.integrate import solve_ivp
+from scipy.integrate._ivp import solve_ivp, OdeSolver
 from numpy import sin, cos, pi
+from tqdm import tqdm
 
 def deriv(t, y, w, g, q):
     theta = y[0]
@@ -16,7 +17,41 @@ def deriv(t, y, w, g, q):
     
     return np.array([thetadot, thetaddot])
 
+def AddProgressBar():
+    old_init = OdeSolver.__init__
+    old_step = OdeSolver.step
 
+    # define our own methods
+    def new_init(self, fun, t0, y0, t_bound, vectorized, support_complex=False):
+
+        # define the progress bar
+        self.pbar = tqdm(total=t_bound - t0, unit='ut', initial=t0, ascii=True, desc='IVP')
+        self.last_t = t0
+        
+        # call the old method - we still want to do the old things too!
+        old_init(self, fun, t0, y0, t_bound, vectorized, support_complex)
+
+
+    def new_step(self):
+        # call the old method
+        old_step(self)
+        
+        # update the bar
+        tst = self.t - self.last_t
+        self.pbar.update(tst)
+        self.last_t = self.t
+
+        # close the bar if the end is reached
+        if self.t >= self.t_bound:
+            self.pbar.close()
+
+
+    # overwrite the old methods with our customized ones
+    OdeSolver.__init__ = new_init
+    OdeSolver.step = new_step
+
+def ModifedSolveIVP():
+    
 def SetSim():
     global w
     global q
@@ -174,7 +209,7 @@ def SaveData(N):
 
     i=0
     for n in N:
-        print("Trying to save {}x2 data points".format(n))
+        print("Trying to save {} data points".format(n))
 
         start_time = time.time()
         sol = solve_ivp(deriv, (0, (n+30)*2*pi/w), y0, t_eval=np.linspace(30*2*pi/w, (n+30)*2*pi/w, n+1), args=(w, g, q, ))
@@ -202,6 +237,7 @@ def LoadData(N):
         sol = pickle.load(file)
     return sol
 
+AddProgressBar()
 
 w = 2/3
 q = 2
@@ -219,8 +255,7 @@ tf = 5000
 N = np.geomspace(10**7, 10**8, 3)
 N = N.astype(int)
 
-
-SaveData([10**8])
+SaveData([10*10**4])
 
 # sol = LoadData(N[2])
 # th = sol.y[0]

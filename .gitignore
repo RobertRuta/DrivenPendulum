@@ -1,5 +1,6 @@
 #Ignore virtual environment folder
 .venv
+.venv39
 
 #Ignore pickles folder
 Pickles
