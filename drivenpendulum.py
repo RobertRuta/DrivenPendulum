@@ -5,7 +5,6 @@ import time
 
 from scipy.integrate._ivp import solve_ivp, OdeSolver
 from numpy import sin, cos, pi
-from tqdm import tqdm
 
 def deriv(t, y, w, g, q):
     theta = y[0]
@@ -17,41 +16,7 @@ def deriv(t, y, w, g, q):
     
     return np.array([thetadot, thetaddot])
 
-def AddProgressBar():
-    old_init = OdeSolver.__init__
-    old_step = OdeSolver.step
 
-    # define our own methods
-    def new_init(self, fun, t0, y0, t_bound, vectorized, support_complex=False):
-
-        # define the progress bar
-        self.pbar = tqdm(total=t_bound - t0, unit='ut', initial=t0, ascii=True, desc='IVP')
-        self.last_t = t0
-        
-        # call the old method - we still want to do the old things too!
-        old_init(self, fun, t0, y0, t_bound, vectorized, support_complex)
-
-
-    def new_step(self):
-        # call the old method
-        old_step(self)
-        
-        # update the bar
-        tst = self.t - self.last_t
-        self.pbar.update(tst)
-        self.last_t = self.t
-
-        # close the bar if the end is reached
-        if self.t >= self.t_bound:
-            self.pbar.close()
-
-
-    # overwrite the old methods with our customized ones
-    OdeSolver.__init__ = new_init
-    OdeSolver.step = new_step
-
-def ModifedSolveIVP():
-    
 def SetSim():
     global w
     global q
