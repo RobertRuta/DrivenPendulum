@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pickle
 import time
 
-from scipy.integrate._ivp import solve_ivp, OdeSolver
+from scipy.integrate import solve_ivp, OdeSolver
 from numpy import sin, cos, pi
 from tqdm import tqdm
 
@@ -16,6 +16,7 @@ def deriv(t, y, w, g, q):
     thetaddot = - thetadot / q - sin(theta) + g*cos(phi)
     
     return np.array([thetadot, thetaddot])
+
 
 def AddProgressBar():
     old_init = OdeSolver.__init__
@@ -49,7 +50,8 @@ def AddProgressBar():
     # overwrite the old methods with our customized ones
     OdeSolver.__init__ = new_init
     OdeSolver.step = new_step
-    
+
+
 def SetSim():
     global w
     global q
