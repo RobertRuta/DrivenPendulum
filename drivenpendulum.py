@@ -7,6 +7,7 @@ from scipy.integrate import solve_ivp, OdeSolver
 from numpy import sin, cos, pi
 from tqdm import tqdm
 
+
 def deriv(t, y, w, g, q):
     theta = y[0]
     thetadot = y[1]
@@ -21,7 +22,6 @@ def deriv(t, y, w, g, q):
 def AddProgressBar():
     old_init = OdeSolver.__init__
     old_step = OdeSolver.step
-
     # define our own methods
     def new_init(self, fun, t0, y0, t_bound, vectorized, support_complex=False):
 
@@ -209,10 +209,10 @@ def SaveData(N):
 
     i=0
     for n in N:
-        print("Trying to save {} data points".format(n))
+        print("Trying to save {}x2 data points".format(n))
 
         start_time = time.time()
-        sol = solve_ivp(deriv, (0, (n+30)*2*pi/w), y0, t_eval=np.linspace(30*2*pi/w, (n+30)*2*pi/w, n+1), args=(w, g, q, ))
+        sol = solve_ivp(deriv, (0, (n+30)*2*pi/w), y0, t_eval=np.linspace(30*2*pi/w, (n+30)*2*pi/w, n+1), args=(w, g, q, ), method='RK45')
         solve_time = time.time() - start_time
         print("Total solve time: {}".format(solve_time))
 
@@ -231,6 +231,8 @@ def SaveData(N):
         i += 1
 
     np.savetxt("timings.csv", data_to_save, delimiter=', ')
+
+    return sol
 
 def LoadData(N):
     with open("Pickles/phasedata_q20_g15_{}e3.pickle".format(int(N/1000)), 'rb') as file:
@@ -255,7 +257,8 @@ tf = 5000
 N = np.geomspace(10**7, 10**8, 3)
 N = N.astype(int)
 
-SaveData([10*10**4])
+
+sol = SaveData([10**4])
 
 # sol = LoadData(N[2])
 # th = sol.y[0]
