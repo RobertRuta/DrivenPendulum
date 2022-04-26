@@ -211,7 +211,7 @@ def SaveData(N):
         print("Trying to save {}x2 data points".format(n))
 
         start_time = time.time()
-        sol = solve_ivp(deriv, (0, (n+30)*2*pi/w), y0, t_eval=np.linspace(30*2*pi/w, (n+30)*2*pi/w, n+1), args=(w, g, q, ))
+        sol = solve_ivp(deriv, (0, (n+30)*2*pi/w), y0, t_eval=np.linspace(30*2*pi/w, (n+30)*2*pi/w, n+1), args=(w, g, q, ), method='RK45')
         solve_time = time.time() - start_time
         print("Total solve time: {}".format(solve_time))
 
@@ -231,11 +231,14 @@ def SaveData(N):
 
     np.savetxt("timings.csv", data_to_save, delimiter=', ')
 
+    return sol
+
 def LoadData(N):
     with open("Pickles/phasedata_q20_g15_{}e3.pickle".format(int(N/1000)), 'rb') as file:
         sol = pickle.load(file)
     return sol
 
+AddProgressBar()
 
 w = 2/3
 q = 2
@@ -254,7 +257,7 @@ N = np.geomspace(10**7, 10**8, 3)
 N = N.astype(int)
 
 
-SaveData([10**8])
+sol = SaveData([10**4])
 
 # sol = LoadData(N[2])
 # th = sol.y[0]
