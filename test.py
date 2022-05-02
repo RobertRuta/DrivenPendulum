@@ -1,29 +1,12 @@
 import numpy as np
-from numpy import pi, cos
-import time
-import pickle
+import matplotlib.pyplot as plt
 
-start_time = time.time()
+xp = np.linspace(0,10,10)
+fp = np.sin(xp)
+x = np.linspace(0, 10, 1000)
 
-N = 1000000
+Y = np.interp(x, xp, fp)
 
-
-
-data = np.random.uniform(0, 1, size=(N,2))
-
-with open('test_data.pickle', 'wb') as file:
-    pickle.dump(data, file)
-
-with open('test_data.pickle', 'rb') as file:
-    data_loaded = pickle.load(file)
-
-print(data_loaded)
-print(data)
-
-#np.savetxt('test_data1.csv', data, delimiter=', ')
-#file = open('test_data', 'w')
-#file.write()
-
-## Conclusion:: Pickle fast af
-
-print("--- %s seconds ---" % (time.time() - start_time))
+plt.plot(xp,fp)
+plt.scatter(x,Y)
+plt.show()
