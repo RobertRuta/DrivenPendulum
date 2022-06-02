@@ -1,4 +1,4 @@
-# DrivenPendulum2
+# DrivenPendulum
 
 This repository hosts my final project for a physics simulations course, offered by the University of Warsaw and taught by Dr. Ryszard Kutner. This project features analysis and simulation of the driven and damped pendulum system, provided by the equation:
 
