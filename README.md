@@ -2,7 +2,7 @@
 
 This repository hosts my final project for a physics simulations course, offered by the University of Warsaw and taught by Dr. Ryszard Kutner. This project features analysis and simulation of the driven and damped pendulum system, provided by the equation:
 
-$$ \ddot{\Theta} = {-b \pm \sqrt{b^2-4ac} \over 2a} $$
+$$ \ddot{\theta} = {-\frac{1}{q} \dot{\theta} - \sin{\theta} + g \cos{\phi}} $$
 
 drivenpendulum.py hosts all the code used to generate the frames of the below animations. Gifs were created using ImageMagick. 
 
