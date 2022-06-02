@@ -89,7 +89,7 @@ def CleanUp(solution):
     for angle in solution.y[0]:    
         sgn = angle / np.abs(angle)
         result = angle - sgn*int((np.abs(np.degrees(angle)) + 180)/360)*2*np.pi
-        solution.y[0,i] = result            
+        solution.y[0][i] = result
         i += 1
 
 def MakePhaseDiagram(axes, X, Y, g):
@@ -258,17 +258,19 @@ N = np.geomspace(10**7, 10**8, 3)
 N = N.astype(int)
 
 
-sol = SaveData([10**4])
+#sol = SaveData([10**8])
 
-# sol = LoadData(N[2])
-# th = sol.y[0]
-# omega = sol.y[1]
+sol = LoadData(10**8)
+#print(sol.t)
 
-# fig = plt.figure(figsize=(7,7), dpi=128)
-# ax = fig.add_subplot(111)
-# MakePoincareDiagram(ax,th,omega,1.5)
-# #ax.scatter(th, omega, marker='.', linewidth=0, s=0.1, c='k')
-# plt.show()
+th = sol.y[0]
+omega = sol.y[1]
+
+fig = plt.figure(figsize=(7,7), dpi=128)
+ax = fig.add_subplot(111)
+#MakePoincareDiagram(ax,th,omega,1.5)
+ax.scatter(th, omega, marker='.', linewidth=0, s=0.1, c='k')
+plt.show()
 
 # fig = plt.figure(figsize=(8,8))
 # ax = fig.add_subplot(111)
