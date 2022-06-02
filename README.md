@@ -6,7 +6,7 @@ drivenpendulum.py hosts all the code used to generate the frames of the below an
 
 ### Driven pendulum animation ###
 ![](https://github.com/RobertRuta/DrivenPendulum2/blob/main/animation/anim_q4_g15_30s.gif)
-### Self-similarity demonstration on Poincare map. 10^8 points. ###
-![](https://github.com/RobertRuta/DrivenPendulum2/blob/main/Self-similarity/anim_samopodo_6.gif)
 ### Phase and Poincare diagram variation with parameter choice. ###
 ![](https://github.com/RobertRuta/DrivenPendulum2/blob/main/PhaseAndPoincare_frames/Poincare_Phase.gif)
+### Self-similarity demonstration on Poincare map. 10^8 points. ###
+![](https://github.com/RobertRuta/DrivenPendulum2/blob/main/Self-similarity/anim_samopodo_6.gif)
