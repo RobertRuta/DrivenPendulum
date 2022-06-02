@@ -2,9 +2,9 @@
 
 This repository hosts my final project for a physics simulations course, offered by the University of Warsaw and taught by Dr. Ryszard Kutner. This project features analysis and simulation of the driven and damped pendulum system, provided by the equation:
 
-$$ \ddot{\theta} = {-\frac{1}{q} \dot{\theta} - \sin{\theta} + g \cos{\phi}} $$
+$$ \ddot{\theta} = {-\frac{1}{q} \dot{\theta} - \sin{\theta} + g \cos{\phi}}. $$
 
-drivenpendulum.py hosts all the code used to generate the frames of the below animations. Gifs were created using ImageMagick. 
+The python file \drivenpendulum.py hosts all the code used to generate the frames of the below animations. Gifs were created using ImageMagick. 
 
 ### Driven pendulum animation ###
 ![](https://github.com/RobertRuta/DrivenPendulum2/blob/main/animation/anim_q4_g15_30s.gif)
